@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ταμείο - Cash Register</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <form autocomplete="off">
+    <div class="container">
+        <button id="theme-toggle" type="button" class="theme-toggle" aria-label="Toggle dark mode">
+            <span class="theme-icon">🌙</span>
+        </button>
+        <h1>Ταμείο</h1>
+
+        <div class="mode-toggle">
+            <button type="button" id="mode-amount" class="mode-btn active" onclick="toggleInputMode(false)">€ Ποσό</button>
+            <button type="button" id="mode-count" class="mode-btn" onclick="toggleInputMode(true)"># Κομμάτια</button>
+        </div>
+
+        <div class="section">
+            <h2>Χαρτονομίσματα (Bills)</h2>
+            <div class="input-group">
+                <label for="bill-100">100€</label>
+                <input type="text" inputmode="decimal" id="bill-100" placeholder="0" autocomplete="off">
+                <span class="currency">€</span>
+            </div>
+            <div class="input-group">
+                <label for="bill-50">50€</label>
+                <input type="text" inputmode="decimal" id="bill-50" placeholder="0" autocomplete="off">
+                <span class="currency">€</span>
+            </div>
+            <div class="input-group">
+                <label for="bill-20">20€</label>
+                <input type="text" inputmode="decimal" id="bill-20" placeholder="0" autocomplete="off">
+                <span class="currency">€</span>
+            </div>
+            <div class="input-group">
+                <label for="bill-10">10€</label>
+                <input type="text" inputmode="decimal" id="bill-10" placeholder="0" autocomplete="off">
+                <span class="currency">€</span>
+            </div>
+            <div class="input-group">
+                <label for="bill-5">5€</label>
+                <input type="text" inputmode="decimal" id="bill-5" placeholder="0" autocomplete="off">
+                <span class="currency">€</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Κέρματα</h2>
+            <div class="input-group">
+                <label for="coin-2">2€</label>
+                <input type="text" inputmode="decimal" id="coin-2" placeholder="0" autocomplete="off">
+                <span class="currency">€</span>
+            </div>
+            <div class="input-group">
+                <label for="coin-1">1€</label>
+                <input type="text" inputmode="decimal" id="coin-1" placeholder="0" autocomplete="off">
+                <span class="currency">€</span>
+            </div>
+            <div class="input-group">
+                <label for="coin-0-5">0.50€</label>
+                <input type="text" inputmode="decimal" id="coin-0-5" placeholder="0" autocomplete="off">
+                <span class="currency">€</span>
+            </div>
+            <div class="input-group">
+                <label for="coin-0-2">0.20€</label>
+                <input type="text" inputmode="decimal" id="coin-0-2" placeholder="0" autocomplete="off">
+                <span class="currency">€</span>
+            </div>
+            <div class="input-group">
+                <label for="coin-0-1">0.10€</label>
+                <input type="text" inputmode="decimal" id="coin-0-1" placeholder="0" autocomplete="off">
+                <span class="currency">€</span>
+            </div>
+            <div class="input-group">
+                <label for="coin-0-05">0.05€</label>
+                <input type="text" inputmode="decimal" id="coin-0-05" placeholder="0" autocomplete="off">
+                <span class="currency">€</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Άλλα Ποσά (Other Amounts)</h2>
+            <div class="input-group">
+                <label for="kermata">ΚΕΡΜΑΤΑ</label>
+                <input type="text" inputmode="decimal" id="kermata" placeholder="0" autocomplete="off">
+                <span class="currency">€</span>
+            </div>
+            <div class="input-group">
+                <label for="exoda-count">Αριθμός Εξόδων</label>
+                <select id="exoda-count" autocomplete="off">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+            </div>
+            <div id="exoda-container"></div>
+            <div class="input-group">
+                <label for="wolt">WOLT</label>
+                <input type="text" inputmode="decimal" id="wolt" placeholder="0" autocomplete="off">
+                <span class="currency">€</span>
+            </div>
+            <div class="input-group">
+                <label for="efood">EFOOD</label>
+                <input type="text" inputmode="decimal" id="efood" placeholder="0" autocomplete="off">
+                <span class="currency">€</span>
+            </div>
+            <div class="input-group">
+                <label for="mypos">myPos</label>
+                <input type="text" inputmode="decimal" id="mypos" placeholder="0" autocomplete="off">
+                <span class="currency">€</span>
+            </div>
+            <div class="input-group">
+                <label for="eurobank">Eurobank</label>
+                <input type="text" inputmode="decimal" id="eurobank" placeholder="0" autocomplete="off">
+                <span class="currency">€</span>
+            </div>
+        </div>
+
+        <div class="summary">
+            <div class="summary-row grand-total">
+                <span>ΤΑΜΕΙΟ:</span>
+                <strong id="grand-total">0.00€</strong>
+            </div>
+            <div class="summary-row grand-total">
+                <span>ΣΥΝΟΛΟ ΕΞΟΔΩΝ:</span>
+                <strong id="total-exoda">0.00€</strong>
+            </div>
+            <div class="summary-row grand-total">
+                <span>ΜΕΤΡΗΤΑ:</span>
+                <strong id="cash-total">0.00€</strong>
+            </div>
+            <div class="summary-row grand-total">
+                <span>ΜΕΤΡΗΤΑ LIM:</span>
+                <strong id="cash-lim-total">0.00€</strong>
+            </div>
+            <div class="summary-row grand-total">
+                <span>ΕΣΟΔΑ LIM:</span>
+                <strong id="income-lim-total">0.00€</strong>
+            </div>
+        </div>
+
+        <div class="farewell">
+            <p>✨ Καλή Ξεκούραση! ✨</p>
+        </div>
+
+        <div class="actions">
+            <button id="fakelos-btn" type="button" class="btn btn-primary">ΦΑΚΕΛΟΣ</button>
+            <button id="stelno-btn" type="button" class="btn btn-primary">Στέλνω</button>
+            <button id="reset-btn" type="button" class="btn btn-secondary">Καθαρισμός</button>
+        </div>
+
+        <div id="stelno-overlay" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <h3>Στέλνω</h3>
+                <div id="stelno-body"></div>
+                <button type="button" class="btn btn-secondary modal-close" id="stelno-close">Κλείσιμο</button>
+            </div>
+        </div>
+
+        <div id="fakelos-result" class="fakelos-result" style="display: none;">
+            <h3>Φάκελος</h3>
+            <div id="fakelos-breakdown"></div>
+        </div>
+    </div>
+    </form>
+
+    <script src="script.js"></script>
+</body>
+</html>
