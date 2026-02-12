@@ -195,12 +195,17 @@ function createExodaFields(count) {
         if (input && input.value) {
             existingValues[i] = input.value;
         }
+        const descInput = cachedInputs[`exoda-desc-${i}`];
+        if (descInput && descInput.value) {
+            existingValues[`desc-${i}`] = descInput.value;
+        }
     }
 
     // Clear container and remove old cached inputs
     container.innerHTML = '';
     for (let i = 1; i <= currentExodaCount; i++) {
         delete cachedInputs[`exoda-${i}`];
+        delete cachedInputs[`exoda-desc-${i}`];
     }
 
     currentExodaCount = count;
@@ -208,13 +213,28 @@ function createExodaFields(count) {
     // Debounced update function (50ms delay)
     const debouncedUpdate = debounce(updateTotals, 50);
 
+    // Debounced save for exoda fields
+    const debouncedSave = debounce(saveAllValues, 300);
+
     for (let i = 1; i <= count; i++) {
         const div = document.createElement('div');
-        div.className = 'input-group';
+        div.className = 'input-group input-group-exoda';
 
         const label = document.createElement('label');
         label.setAttribute('for', `exoda-${i}`);
         label.textContent = `ΈΞΟΔΑ ${i}`;
+
+        const descInput = document.createElement('input');
+        descInput.type = 'text';
+        descInput.id = `exoda-desc-${i}`;
+        descInput.placeholder = 'Περιγραφή';
+        descInput.autocomplete = 'off';
+        descInput.className = 'exoda-desc';
+
+        // Restore description if it existed
+        if (existingValues[`desc-${i}`]) {
+            descInput.value = existingValues[`desc-${i}`];
+        }
 
         const input = document.createElement('input');
         input.type = 'text';
@@ -233,21 +253,24 @@ function createExodaFields(count) {
         span.textContent = '€';
 
         div.appendChild(label);
+        div.appendChild(descInput);
         div.appendChild(input);
         div.appendChild(span);
         container.appendChild(div);
 
-        // Cache the input element
+        // Cache the input elements
         cachedInputs[`exoda-${i}`] = input;
-
-        // Debounced save for exoda fields
-        const debouncedSave = debounce(saveAllValues, 300);
+        cachedInputs[`exoda-desc-${i}`] = descInput;
 
         // Add event listeners
         input.addEventListener('input', (e) => {
             handleCommaInput(e);
             validateInput(`exoda-${i}`);
             debouncedUpdate();
+            debouncedSave();
+        });
+
+        descInput.addEventListener('input', () => {
             debouncedSave();
         });
     }
@@ -278,11 +301,15 @@ function saveAllValues() {
         }
     });
 
-    // Save exoda fields
+    // Save exoda fields (amounts and descriptions)
     for (let i = 1; i <= currentExodaCount; i++) {
         const input = cachedInputs[`exoda-${i}`];
         if (input && input.value) {
             values[`exoda-${i}`] = input.value;
+        }
+        const descInput = cachedInputs[`exoda-desc-${i}`];
+        if (descInput && descInput.value) {
+            values[`exoda-desc-${i}`] = descInput.value;
         }
     }
 
@@ -322,11 +349,15 @@ function restoreAllValues() {
         }
     });
 
-    // Restore exoda fields
+    // Restore exoda fields (amounts and descriptions)
     for (let i = 1; i <= currentExodaCount; i++) {
         const input = cachedInputs[`exoda-${i}`];
         if (input && values[`exoda-${i}`]) {
             input.value = values[`exoda-${i}`];
+        }
+        const descInput = cachedInputs[`exoda-desc-${i}`];
+        if (descInput && values[`exoda-desc-${i}`]) {
+            descInput.value = values[`exoda-desc-${i}`];
         }
     }
 }
@@ -524,6 +555,29 @@ function showStelno() {
     html += `<div class="stelno-row"><span>ΤΑΜΕΙΟ</span><strong>${tameioVal}</strong></div>`;
     html += `<div class="stelno-row"><span>ΜΕΤΡΗΤΑ</span><strong>${cashVal}</strong></div>`;
     html += `<div class="stelno-row"><span>ΕΞΟΔΑ</span><strong>${exodaVal}</strong></div>`;
+
+    // Individual exoda breakdown
+    for (let i = 1; i <= currentExodaCount; i++) {
+        const amount = parseFloat(cachedInputs[`exoda-${i}`]?.value) || 0;
+        if (amount === 0) continue;
+        const desc = cachedInputs[`exoda-desc-${i}`]?.value || '';
+        const label = desc ? desc : `Έξοδα ${i}`;
+        html += `<div class="stelno-row stelno-row-exodo"><span>${label}</span><strong>${formatCurrency(amount)}</strong></div>`;
+    }
+
+    // Wolt, Efood, myPos, Eurobank (only if non-zero)
+    const otherFields = [
+        { id: 'wolt', label: 'WOLT' },
+        { id: 'efood', label: 'EFOOD' },
+        { id: 'mypos', label: 'myPos' },
+        { id: 'eurobank', label: 'Eurobank' }
+    ];
+    for (const { id, label } of otherFields) {
+        const amount = parseFloat(cachedInputs[id].value) || 0;
+        if (amount === 0) continue;
+        html += `<div class="stelno-row"><span>${label}</span><strong>${formatCurrency(amount)}</strong></div>`;
+    }
+
     html += '</div>';
 
     // Remaining bills after fakelos (show all, including 0)
@@ -543,7 +597,7 @@ function showStelno() {
 
     // Χρηματοκιβώτιο (ΚΕΡΜΑΤΑ field value)
     const kermataVal = formatCurrency(parseFloat(cachedInputs['kermata'].value) || 0);
-    html += `<div class="stelno-row" style="margin-top:16px;"><span>Χρηματοκιβώτιο</span><strong>${kermataVal}</strong></div>`;
+    html += `<div class="stelno-row" style="margin-top:8px;"><span>Χρηματοκιβώτιο</span><strong>${kermataVal}</strong></div>`;
 
     document.getElementById('stelno-body').innerHTML = html;
     document.getElementById('stelno-overlay').style.display = 'flex';
