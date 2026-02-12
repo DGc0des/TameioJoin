@@ -175,7 +175,7 @@ body.dark-mode h2 {
 }
 
 .input-group-exoda {
-    grid-template-columns: 88px 1fr 100px 32px;
+    grid-template-columns: 88px 1fr 80px 32px;
 }
 
 .input-group label {
@@ -753,7 +753,12 @@ body.dark-mode .fakelos-message {
     }
 
     .input-group-exoda {
-        grid-template-columns: 80px 1fr 80px 28px;
+        grid-template-columns: 62px 1fr 70px 20px;
+        gap: 6px;
+    }
+
+    .input-group-exoda label {
+        font-size: 0.75em;
     }
 
     .input-group label {
