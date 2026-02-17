@@ -211,7 +211,7 @@ body.dark-mode .input-group label {
 }
 
 .exoda-desc {
-    font-size: 0.9em !important;
+    font-size: 16px !important;
 }
 
 .input-group input.invalid {
@@ -516,8 +516,9 @@ body.dark-mode .farewell p {
 .actions {
     margin-top: 22px;
     display: flex;
-    gap: 14px;
+    gap: 10px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .btn {
@@ -974,7 +975,7 @@ body.dark-mode .fakelos-message {
     .input-group-exoda .exoda-desc {
         grid-column: 1;
         grid-row: 2;
-        font-size: 14px;
+        font-size: 16px;
         padding: 10px 10px;
     }
 
@@ -1001,5 +1002,17 @@ body.dark-mode .fakelos-message {
     .input-group .total,
     .input-group .currency {
         font-size: 0.85em;
+    }
+
+    .actions {
+        gap: 8px;
+    }
+
+    .btn {
+        padding: 11px 18px;
+        font-size: 0.85em;
+        flex: 1 1 auto;
+        min-width: 0;
+        text-align: center;
     }
 }
