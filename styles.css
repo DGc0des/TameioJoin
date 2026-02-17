@@ -589,7 +589,7 @@ body.dark-mode .btn-secondary:hover {
 .modal-content {
     background: var(--cream-0);
     border-radius: 18px;
-    padding: 18px 20px;
+    padding: 14px 16px;
     max-width: 380px;
     width: 100%;
     max-height: 85vh;
@@ -604,10 +604,10 @@ body.dark-mode .modal-content {
 
 .modal-content h3 {
     text-align: center;
-    font-size: 1.1em;
+    font-size: 1em;
     font-weight: 700;
     color: var(--ink-900);
-    margin-bottom: 12px;
+    margin-bottom: 6px;
     letter-spacing: -0.3px;
 }
 
@@ -616,14 +616,14 @@ body.dark-mode .modal-content h3 {
 }
 
 .stelno-totals {
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
 .stelno-row {
     display: flex;
     justify-content: space-between;
-    padding: 5px 0;
-    font-size: 0.95em;
+    padding: 3px 0;
+    font-size: 0.88em;
     font-weight: 600;
     color: var(--ink-900);
     border-bottom: 1px solid rgba(64, 64, 48, 0.08);
@@ -639,11 +639,11 @@ body.dark-mode .stelno-row {
 }
 
 .stelno-row-info {
-    font-size: 0.9em;
+    font-size: 0.82em;
     font-weight: 500;
     color: var(--muted-600);
-    padding-bottom: 8px;
-    margin-bottom: 4px;
+    padding-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 body.dark-mode .stelno-row-info {
@@ -651,9 +651,9 @@ body.dark-mode .stelno-row-info {
 }
 
 .stelno-row-exodo {
-    font-size: 0.85em;
+    font-size: 0.78em;
     font-weight: 400;
-    padding: 3px 0 3px 12px;
+    padding: 1px 0 1px 10px;
     color: var(--muted-600);
 }
 
@@ -662,13 +662,13 @@ body.dark-mode .stelno-row-exodo {
 }
 
 .stelno-section-title {
-    font-size: 0.68em;
+    font-size: 0.65em;
     font-weight: 650;
     text-transform: uppercase;
-    letter-spacing: 1.6px;
+    letter-spacing: 1.2px;
     color: var(--muted-500);
-    margin-top: 10px;
-    margin-bottom: 4px;
+    margin-top: 6px;
+    margin-bottom: 2px;
 }
 
 body.dark-mode .stelno-section-title {
@@ -676,15 +676,26 @@ body.dark-mode .stelno-section-title {
 }
 
 .stelno-denom-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 2px 0;
-    font-size: 0.88em;
+    display: inline;
+    font-size: 0.82em;
     color: var(--ink-700);
+}
+
+.stelno-denom-row:not(:last-child)::after {
+    content: ' · ';
+    color: var(--muted-500);
+}
+
+.stelno-denoms-wrap {
+    line-height: 1.6;
 }
 
 body.dark-mode .stelno-denom-row {
     color: #f5f5f7;
+}
+
+body.dark-mode .stelno-denom-row:not(:last-child)::after {
+    color: #86868b;
 }
 
 .stelno-denom-count {
@@ -694,7 +705,7 @@ body.dark-mode .stelno-denom-row {
 .modal-close {
     display: block;
     width: 100%;
-    margin-top: 12px;
+    margin-top: 8px;
 }
 
 @media print {

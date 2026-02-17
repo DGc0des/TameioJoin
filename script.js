@@ -613,24 +613,38 @@ function showStelno() {
 
     html += '</div>';
 
-    // Remaining bills after fakelos (show all, including 0)
-    html += '<div class="stelno-section-title">Χαρτονομίσματα</div>';
-    for (const denom of billDenoms) {
-        const left = Math.max(0, (billCounts[denom] || 0) - (usedBills[denom] || 0));
-        html += `<div class="stelno-denom-row"><span>${denom}€</span><span class="stelno-denom-count">${left} ${left === 1 ? 'χαρτνόμισμα' : 'χαρτονομίσματα'}</span></div>`;
+    // Remaining bills after fakelos (compact inline, only non-zero)
+    const remainingBills = billDenoms
+        .map(d => ({ denom: d, left: Math.max(0, (billCounts[d] || 0) - (usedBills[d] || 0)) }))
+        .filter(b => b.left > 0);
+
+    if (remainingBills.length) {
+        html += '<div class="stelno-section-title">Χαρτονομίσματα</div>';
+        html += '<div class="stelno-denoms-wrap">';
+        for (const b of remainingBills) {
+            html += `<span class="stelno-denom-row"><span class="stelno-denom-count">${b.left}</span>×${b.denom}€</span>`;
+        }
+        html += '</div>';
     }
 
-    // Remaining coins after fakelos (show all, including 0)
-    html += '<div class="stelno-section-title">Κέρματα</div>';
-    for (const denom of coinDenoms) {
-        const left = Math.max(0, (coinCounts[denom] || 0) - (usedCoins[denom] || 0));
-        const denomLabel = denom >= 1 ? `${denom}€` : `${(denom * 100).toFixed(0)}c`;
-        html += `<div class="stelno-denom-row"><span>${denomLabel}</span><span class="stelno-denom-count">${left} ${left === 1 ? 'κέρμα' : 'κέρματα'}</span></div>`;
+    // Remaining coins after fakelos (compact inline, only non-zero)
+    const remainingCoins = coinDenoms
+        .map(d => ({ denom: d, left: Math.max(0, (coinCounts[d] || 0) - (usedCoins[d] || 0)) }))
+        .filter(c => c.left > 0);
+
+    if (remainingCoins.length) {
+        html += '<div class="stelno-section-title">Κέρματα</div>';
+        html += '<div class="stelno-denoms-wrap">';
+        for (const c of remainingCoins) {
+            const label = c.denom >= 1 ? `${c.denom}€` : `${(c.denom * 100).toFixed(0)}c`;
+            html += `<span class="stelno-denom-row"><span class="stelno-denom-count">${c.left}</span>×${label}</span>`;
+        }
+        html += '</div>';
     }
 
     // Χρηματοκιβώτιο (ΚΕΡΜΑΤΑ field value)
     const kermataVal = formatCurrency(parseFloat(cachedInputs['kermata'].value) || 0);
-    html += `<div class="stelno-row" style="margin-top:8px;"><span>Χρηματοκιβώτιο</span><strong>${kermataVal}</strong></div>`;
+    html += `<div class="stelno-row" style="margin-top:4px;"><span>Χρηματοκιβώτιο</span><strong>${kermataVal}</strong></div>`;
 
     document.getElementById('stelno-body').innerHTML = html;
     document.getElementById('stelno-overlay').style.display = 'flex';
