@@ -56,6 +56,17 @@ function init() {
         cachedInputs[id] = document.getElementById(id);
     });
 
+    // Cache name and date fields
+    cachedInputs['user-name'] = document.getElementById('user-name');
+    cachedInputs['user-date'] = document.getElementById('user-date');
+
+    // Set today's date as default (DD/MM/YYYY)
+    const today = new Date();
+    cachedInputs['user-date'].value = formatDateDMY(today);
+
+    // Initialize calendar
+    initCalendar(today);
+
     // Cache output elements
     cachedOutputs.grandTotal = document.getElementById('grand-total');
     cachedOutputs.totalExoda = document.getElementById('total-exoda');
@@ -78,6 +89,9 @@ function init() {
             debouncedSave();
         });
     });
+
+    // Add save listeners for name and date fields
+    cachedInputs['user-name'].addEventListener('input', () => debouncedSave());
 
     // Restore exoda count and values from localStorage
     const savedExodaCount = localStorage.getItem('exodaCount');
@@ -301,6 +315,11 @@ function saveAllValues() {
         }
     });
 
+    // Save name
+    if (cachedInputs['user-name'] && cachedInputs['user-name'].value) {
+        values['user-name'] = cachedInputs['user-name'].value;
+    }
+
     // Save exoda fields (amounts and descriptions)
     for (let i = 1; i <= currentExodaCount; i++) {
         const input = cachedInputs[`exoda-${i}`];
@@ -340,6 +359,11 @@ function restoreAllValues() {
     if (!saved) return;
 
     const values = JSON.parse(saved);
+
+    // Restore name (date is always set to today on load)
+    if (cachedInputs['user-name'] && values['user-name']) {
+        cachedInputs['user-name'].value = values['user-name'];
+    }
 
     // Restore main fields
     const allFields = [...denominations.bills, ...denominations.coins, ...denominations.other];
@@ -550,8 +574,17 @@ function showStelno() {
         }
     }
 
+    // Get name and date
+    const userName = cachedInputs['user-name'].value || '';
+    const userDate = cachedInputs['user-date'].value || '';
+
     // Build popup HTML
     let html = '<div class="stelno-totals">';
+
+    if (userName || userDate) {
+        html += `<div class="stelno-row stelno-row-info"><span>${userName}</span><span>${userDate}</span></div>`;
+    }
+
     html += `<div class="stelno-row"><span>ΤΑΜΕΙΟ</span><strong>${tameioVal}</strong></div>`;
     html += `<div class="stelno-row"><span>ΜΕΤΡΗΤΑ</span><strong>${cashVal}</strong></div>`;
     html += `<div class="stelno-row"><span>ΕΞΟΔΑ</span><strong>${exodaVal}</strong></div>`;
@@ -752,6 +785,148 @@ function calculateFakelos() {
 
     // Scroll to the result
     resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// --- Custom Calendar ---
+
+const MONTH_NAMES_GR = ['Ιαν', 'Φεβ', 'Μαρ', 'Απρ', 'Μάι', 'Ιούν', 'Ιούλ', 'Αύγ', 'Σεπ', 'Οκτ', 'Νοέ', 'Δεκ'];
+const DAY_NAMES_GR = ['Δε', 'Τρ', 'Τε', 'Πε', 'Πα', 'Σα', 'Κυ'];
+
+let calendarViewDate = new Date();
+let calendarSelectedDate = new Date();
+
+function formatDateDMY(date) {
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    return `${dd}/${mm}/${date.getFullYear()}`;
+}
+
+function initCalendar(today) {
+    calendarViewDate = new Date(today.getFullYear(), today.getMonth(), 1);
+    calendarSelectedDate = new Date(today);
+
+    const toggleBtn = document.getElementById('calendar-toggle');
+    const dateInput = cachedInputs['user-date'];
+
+    // Create dropdown on body so it's not trapped by container's contain property
+    const dropdown = document.createElement('div');
+    dropdown.id = 'calendar-dropdown';
+    dropdown.className = 'calendar-dropdown';
+    dropdown.style.display = 'none';
+    document.body.appendChild(dropdown);
+
+    function openCalendar() {
+        renderCalendar();
+        dropdown.style.display = 'block';
+        // Position relative to the input, clamped to viewport
+        const rect = dateInput.getBoundingClientRect();
+        const dw = dropdown.offsetWidth;
+        const dh = dropdown.offsetHeight;
+        let top = rect.bottom + 6;
+        let left = rect.left;
+        // Keep within viewport
+        if (left + dw > window.innerWidth - 8) {
+            left = window.innerWidth - dw - 8;
+        }
+        if (left < 8) left = 8;
+        if (top + dh > window.innerHeight - 8) {
+            top = rect.top - dh - 6;
+        }
+        dropdown.style.top = top + 'px';
+        dropdown.style.left = left + 'px';
+    }
+
+    toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = dropdown.style.display !== 'none';
+        if (isOpen) {
+            dropdown.style.display = 'none';
+        } else {
+            openCalendar();
+        }
+    });
+
+    dateInput.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openCalendar();
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target) && e.target !== toggleBtn && e.target !== dateInput) {
+            dropdown.style.display = 'none';
+        }
+    });
+}
+
+function renderCalendar() {
+    const dropdown = document.getElementById('calendar-dropdown');
+    const year = calendarViewDate.getFullYear();
+    const month = calendarViewDate.getMonth();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const firstDay = new Date(year, month, 1);
+    let startDay = firstDay.getDay() - 1; // Monday = 0
+    if (startDay < 0) startDay = 6;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    let html = '<div class="cal-header">';
+    html += `<button type="button" class="cal-nav" id="cal-prev">&lsaquo;</button>`;
+    html += `<span class="cal-title">${MONTH_NAMES_GR[month]} ${year}</span>`;
+    html += `<button type="button" class="cal-nav" id="cal-next">&rsaquo;</button>`;
+    html += '</div>';
+
+    html += '<div class="cal-days">';
+    for (const d of DAY_NAMES_GR) {
+        html += `<span class="cal-day-name">${d}</span>`;
+    }
+
+    // Empty cells before first day
+    for (let i = 0; i < startDay; i++) {
+        html += '<span class="cal-empty"></span>';
+    }
+
+    // Day cells
+    for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const isToday = date.getTime() === today.getTime();
+        const isSelected = date.getDate() === calendarSelectedDate.getDate() &&
+                           date.getMonth() === calendarSelectedDate.getMonth() &&
+                           date.getFullYear() === calendarSelectedDate.getFullYear();
+
+        let cls = 'cal-day';
+        if (isToday) cls += ' cal-today';
+        if (isSelected) cls += ' cal-selected';
+
+        html += `<button type="button" class="${cls}" data-day="${day}">${day}</button>`;
+    }
+
+    html += '</div>';
+    dropdown.innerHTML = html;
+
+    // Event listeners
+    document.getElementById('cal-prev').addEventListener('click', (e) => {
+        e.stopPropagation();
+        calendarViewDate.setMonth(calendarViewDate.getMonth() - 1);
+        renderCalendar();
+    });
+
+    document.getElementById('cal-next').addEventListener('click', (e) => {
+        e.stopPropagation();
+        calendarViewDate.setMonth(calendarViewDate.getMonth() + 1);
+        renderCalendar();
+    });
+
+    dropdown.querySelectorAll('.cal-day').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const d = parseInt(btn.dataset.day);
+            calendarSelectedDate = new Date(year, month, d);
+            cachedInputs['user-date'].value = formatDateDMY(calendarSelectedDate);
+            dropdown.style.display = 'none';
+            saveAllValues();
+        });
+    });
 }
 
 // Initialize on page load
