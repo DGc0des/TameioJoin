@@ -56,12 +56,6 @@ function init() {
         cachedInputs[id] = document.getElementById(id);
     });
 
-    // Cache Ζ fields (display-only, no calculations)
-    const zFields = ['z-kathari', 'z-fpa', 'z-synolo'];
-    zFields.forEach(id => {
-        cachedInputs[id] = document.getElementById(id);
-    });
-
     // Cache name and date fields
     cachedInputs['user-name'] = document.getElementById('user-name');
     cachedInputs['user-date'] = document.getElementById('user-date');
@@ -92,14 +86,6 @@ function init() {
             handleCommaInput(e);
             validateInput(id);
             debouncedUpdate();
-            debouncedSave();
-        });
-    });
-
-    // Add input listeners for Ζ fields (save only, no calculations)
-    zFields.forEach(id => {
-        cachedInputs[id].addEventListener('input', (e) => {
-            handleCommaInput(e);
             debouncedSave();
         });
     });
@@ -334,13 +320,6 @@ function saveAllValues() {
         values['user-name'] = cachedInputs['user-name'].value;
     }
 
-    // Save Ζ fields
-    ['z-kathari', 'z-fpa', 'z-synolo'].forEach(id => {
-        if (cachedInputs[id] && cachedInputs[id].value) {
-            values[id] = cachedInputs[id].value;
-        }
-    });
-
     // Save exoda fields (amounts and descriptions)
     for (let i = 1; i <= currentExodaCount; i++) {
         const input = cachedInputs[`exoda-${i}`];
@@ -389,13 +368,6 @@ function restoreAllValues() {
     // Restore main fields
     const allFields = [...denominations.bills, ...denominations.coins, ...denominations.other];
     allFields.forEach(id => {
-        if (cachedInputs[id] && values[id]) {
-            cachedInputs[id].value = values[id];
-        }
-    });
-
-    // Restore Ζ fields
-    ['z-kathari', 'z-fpa', 'z-synolo'].forEach(id => {
         if (cachedInputs[id] && values[id]) {
             cachedInputs[id].value = values[id];
         }
@@ -674,19 +646,10 @@ function showStelno() {
     const kermataVal = formatCurrency(parseFloat(cachedInputs['kermata'].value) || 0);
     html += `<div class="stelno-row" style="margin-top:4px;"><span>Χρηματοκιβώτιο</span><strong>${kermataVal}</strong></div>`;
 
-    // Ζ section
-    const zKathari = parseFloat(cachedInputs['z-kathari'].value) || 0;
-    const zFpa = parseFloat(cachedInputs['z-fpa'].value) || 0;
-    const zSynolo = parseFloat(cachedInputs['z-synolo'].value) || 0;
-    if (zKathari || zFpa || zSynolo) {
-        html += '<div class="stelno-section-title">Ζ</div>';
-        html += `<div class="stelno-row"><span>Καθαρή Αξία</span><strong>${formatCurrency(zKathari)}</strong></div>`;
-        html += `<div class="stelno-row"><span>Σύνολο ΦΠΑ</span><strong>${formatCurrency(zFpa)}</strong></div>`;
-        html += `<div class="stelno-row"><span>Σύνολο</span><strong>${formatCurrency(zSynolo)}</strong></div>`;
-    }
-
     document.getElementById('stelno-body').innerHTML = html;
-    document.getElementById('stelno-overlay').style.display = 'flex';
+    const overlay = document.getElementById('stelno-overlay');
+    overlay.style.display = 'flex';
+    overlay.querySelector('.modal-content').scrollTop = 0;
 }
 
 // Close Στέλνω popup
