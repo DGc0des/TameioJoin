@@ -705,6 +705,31 @@ body.dark-mode .stelno-denom-row:not(:last-child)::after {
     font-weight: 700;
 }
 
+.input-error-msg {
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: #ff3b30;
+    color: #fff;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+}
+
+body.dark-mode .input-error-msg {
+    background: #ff453a;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.modal-actions .btn {
+    flex: 1;
+}
+
 .modal-close {
     display: block;
     width: 100%;

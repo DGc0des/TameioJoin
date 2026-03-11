@@ -175,6 +175,7 @@
             <button id="stelno-btn" type="button" class="btn btn-primary">Στέλνω</button>
             <button id="reset-btn" type="button" class="btn btn-secondary">Καθαρισμός</button>
         </div>
+        <div id="input-error-msg" class="input-error-msg" style="display:none;"></div>
 
         <div id="fakelos-result" class="fakelos-result" style="display: none;">
             <h3>Φάκελος</h3>
@@ -187,10 +188,14 @@
         <div class="modal-content">
             <h3>Στέλνω</h3>
             <div id="stelno-body"></div>
-            <button type="button" class="btn btn-secondary modal-close" id="stelno-close">Κλείσιμο</button>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-primary modal-share" id="stelno-share">Κοινοποίηση</button>
+                <button type="button" class="btn btn-secondary modal-close" id="stelno-close">Κλείσιμο</button>
+            </div>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

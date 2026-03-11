@@ -124,6 +124,7 @@ function init() {
     document.getElementById('fakelos-btn').addEventListener('click', calculateFakelos);
     document.getElementById('stelno-btn').addEventListener('click', showStelno);
     document.getElementById('stelno-close').addEventListener('click', closeStelno);
+    document.getElementById('stelno-share').addEventListener('click', shareStelno);
     document.getElementById('stelno-overlay').addEventListener('click', (e) => {
         if (e.target === e.currentTarget) closeStelno();
     });
@@ -523,7 +524,35 @@ function loadTheme() {
 }
 
 // Show Στέλνω popup with summary and remaining bill/coin counts after fakelos
+// Returns label text of all currently invalid denomination inputs, or empty array if none
+function getInvalidFieldLabels() {
+    const labels = [];
+    for (const id of denominationFields) {
+        const input = cachedInputs[id];
+        if (input && input.classList.contains('invalid')) {
+            const label = document.querySelector(`label[for="${id}"]`);
+            labels.push(label ? label.textContent.trim() : id);
+        }
+    }
+    return labels;
+}
+
+let inputErrorTimeout = null;
+function showInputError(message) {
+    const el = document.getElementById('input-error-msg');
+    el.textContent = message;
+    el.style.display = 'block';
+    if (inputErrorTimeout) clearTimeout(inputErrorTimeout);
+    inputErrorTimeout = setTimeout(() => { el.style.display = 'none'; }, 3500);
+}
+
 function showStelno() {
+    const invalid = getInvalidFieldLabels();
+    if (invalid.length > 0) {
+        showInputError(`Λανθασμένη τιμή στο: ${invalid.join(', ')}`);
+        return;
+    }
+
     const tameioVal = cachedOutputs.grandTotal.textContent;
     const cashVal = cachedOutputs.cashTotal.textContent;
     const exodaVal = cachedOutputs.totalExoda.textContent;
@@ -657,8 +686,58 @@ function closeStelno() {
     document.getElementById('stelno-overlay').style.display = 'none';
 }
 
+// Share Στέλνω popup content as image
+async function shareStelno() {
+    const btn = document.getElementById('stelno-share');
+    const orig = btn.textContent;
+    btn.textContent = '...';
+    btn.disabled = true;
+
+    try {
+        const modalContent = document.querySelector('#stelno-overlay .modal-content');
+        // Temporarily hide the action buttons so they don't appear in the screenshot
+        const actions = modalContent.querySelector('.modal-actions');
+        actions.style.display = 'none';
+
+        const canvas = await html2canvas(modalContent, {
+            backgroundColor: null,
+            scale: 2
+        });
+
+        actions.style.display = '';
+
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        const file = new File([blob], 'stelno.png', { type: 'image/png' });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file] });
+        } else {
+            // Fallback: download the image
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'stelno.png';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    } catch (e) {
+        // user cancelled or error — do nothing
+        const actions = document.querySelector('#stelno-overlay .modal-actions');
+        if (actions) actions.style.display = '';
+    } finally {
+        btn.textContent = orig;
+        btn.disabled = false;
+    }
+}
+
 // Calculate ΦΑΚΕΛΟΣ - breakdown of bills and coins to reach ΜΕΤΡΗΤΑ amount
 function calculateFakelos() {
+    const invalid = getInvalidFieldLabels();
+    if (invalid.length > 0) {
+        showInputError(`Λανθασμένη τιμή στο: ${invalid.join(', ')}`);
+        return;
+    }
+
     // Get the current ΜΕΤΡΗΤΑ value
     const cashTotalText = cachedOutputs.cashTotal.textContent;
     const cashTotal = parseFloat(cashTotalText.replace('€', '')) || 0;
