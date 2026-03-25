@@ -1,3 +1,17 @@
+// Receipt file attached to the Στέλνω share
+let stelnoReceiptFile = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+    const receiptInput = document.getElementById('stelno-receipt-input');
+    if (receiptInput) {
+        receiptInput.addEventListener('change', () => {
+            stelnoReceiptFile = receiptInput.files[0] || null;
+            const btn = document.getElementById('stelno-receipt-btn');
+            btn.textContent = stelnoReceiptFile ? '✓ Απόδειξη' : 'Απόδειξη';
+        });
+    }
+});
+
 // Currency denominations and other fields
 const denominations = {
     bills: ['bill-100', 'bill-50', 'bill-20', 'bill-10', 'bill-5'],
@@ -640,6 +654,14 @@ function showStelno() {
         html += `<div class="stelno-row"><span>${label}</span><strong>${formatCurrency(amount)}</strong></div>`;
     }
 
+    // Σύνολο Delivery = WOLT + EFOOD (only if at least one is non-zero)
+    const woltAmount = parseFloat(cachedInputs['wolt'].value) || 0;
+    const efoodAmount = parseFloat(cachedInputs['efood'].value) || 0;
+    const totalDelivery = woltAmount + efoodAmount;
+    if (totalDelivery > 0) {
+        html += `<div class="stelno-row stelno-row-total"><span>Σύνολο Delivery</span><strong>${formatCurrency(totalDelivery)}</strong></div>`;
+    }
+
     html += '</div>';
 
     // Remaining bills after fakelos (compact inline, only non-zero)
@@ -684,6 +706,12 @@ function showStelno() {
 // Close Στέλνω popup
 function closeStelno() {
     document.getElementById('stelno-overlay').style.display = 'none';
+    // Reset receipt selection
+    stelnoReceiptFile = null;
+    const receiptInput = document.getElementById('stelno-receipt-input');
+    if (receiptInput) receiptInput.value = '';
+    const receiptBtn = document.getElementById('stelno-receipt-btn');
+    if (receiptBtn) receiptBtn.textContent = 'Απόδειξη';
 }
 
 // Share Στέλνω popup content as image
@@ -709,8 +737,10 @@ async function shareStelno() {
         const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
         const file = new File([blob], 'stelno.png', { type: 'image/png' });
 
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({ files: [file] });
+        const filesToShare = stelnoReceiptFile ? [file, stelnoReceiptFile] : [file];
+
+        if (navigator.canShare && navigator.canShare({ files: filesToShare })) {
+            await navigator.share({ files: filesToShare });
         } else {
             // Fallback: download the image
             const url = URL.createObjectURL(blob);

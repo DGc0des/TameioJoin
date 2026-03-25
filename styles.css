@@ -664,6 +664,17 @@ body.dark-mode .stelno-row-exodo {
     color: #a1a1a6;
 }
 
+.stelno-row-total {
+    margin-top: 4px;
+    border-top: 1px solid var(--border-color, #e0e0e0);
+    padding-top: 4px;
+    font-weight: 600;
+}
+
+body.dark-mode .stelno-row-total {
+    border-top-color: #3a3a3c;
+}
+
 .stelno-section-title {
     font-size: 0.65em;
     font-weight: 650;

@@ -189,6 +189,8 @@
             <h3>Στέλνω</h3>
             <div id="stelno-body"></div>
             <div class="modal-actions">
+                <input type="file" id="stelno-receipt-input" accept="image/*" style="display:none;">
+                <button type="button" class="btn btn-secondary" id="stelno-receipt-btn" onclick="document.getElementById('stelno-receipt-input').click()">Z</button>
                 <button type="button" class="btn btn-primary modal-share" id="stelno-share">Κοινοποίηση</button>
                 <button type="button" class="btn btn-secondary modal-close" id="stelno-close">Κλείσιμο</button>
             </div>
