@@ -104,8 +104,8 @@ function init() {
         });
     });
 
-    // Add save listeners for name and date fields
-    cachedInputs['user-name'].addEventListener('input', () => debouncedSave());
+    // Add save listener for name dropdown
+    cachedInputs['user-name'].addEventListener('change', () => debouncedSave());
 
     // Restore exoda count and values from localStorage
     const savedExodaCount = localStorage.getItem('exodaCount');
@@ -352,7 +352,7 @@ function saveAllValues() {
     localStorage.setItem('countMode', isCountMode);
 }
 
-// Restore all field values from localStorage (expires after 1 hour)
+// Restore all field values from localStorage (expires after 10 hours)
 function restoreAllValues() {
     const savedAt = localStorage.getItem('allValuesSavedAt');
     if (savedAt && (Date.now() - parseInt(savedAt)) > 36000000) {
@@ -499,6 +499,10 @@ function resetAll() {
             input.value = '';
             input.classList.remove('invalid');
         });
+
+        // Reset name dropdown
+        const nameSelect = document.getElementById('user-name');
+        if (nameSelect) nameSelect.value = '';
 
         // Clear localStorage
         localStorage.removeItem('allValues');
