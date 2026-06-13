@@ -204,6 +204,11 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script type="module">
+        // Vercel Web Analytics
+        import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@2.0.1/dist/index.mjs';
+        inject();
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
