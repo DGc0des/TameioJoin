@@ -1,0 +1,23 @@
+{
+  "name": "tameio-join",
+  "version": "1.0.0",
+  "description": "A lightweight web app for closing the cash register and reconciling the till at the end of a shift. Staff count bills and coins, log expenses and card/delivery income, and the app handles all the calculations, produces a cash-drop (\"Φάκελος\") breakdown, and shares a clean end-of-day summary as an image.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DGc0des/TameioJoin.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DGc0des/TameioJoin/issues"
+  },
+  "homepage": "https://github.com/DGc0des/TameioJoin#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
