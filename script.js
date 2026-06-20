@@ -308,6 +308,12 @@ function createExodaFields(count) {
             debouncedSave();
         });
 
+        // Auto-fill the name only once the user leaves the amount field, not
+        // while they are still typing.
+        input.addEventListener('blur', () => {
+            autoFillExodaName(i);
+        });
+
         descInput.addEventListener('input', () => {
             // Hide suggestions once the user is typing a description manually
             updateExodaSuggestions(i);
@@ -317,6 +323,28 @@ function createExodaFields(count) {
         // Show suggestions for any restored amount
         updateExodaSuggestions(i);
     }
+}
+
+// Αφού ο χρήστης αφήσει το πεδίο ποσού (blur), αν το ποσό ταιριάζει ΑΚΡΙΒΩΣ με
+// αποθηκευμένο ποσό ενός μόνο προμηθευτή, συμπληρώνουμε αυτόματα το όνομα.
+function autoFillExodaName(i) {
+    const amountInput = cachedInputs[`exoda-${i}`];
+    const descInput = cachedInputs[`exoda-desc-${i}`];
+    if (!amountInput || !descInput) return;
+
+    // Μην αντικαθιστάς όνομα που έχει ήδη γραφτεί χειροκίνητα.
+    if (descInput.value.trim() !== '') return;
+    if (typeof exactExpenseMatch !== 'function') return;
+
+    const amount = parseFloat((amountInput.value || '').replace(',', '.'));
+    if (!isFinite(amount) || amount <= 0) return;
+
+    const exactName = exactExpenseMatch(amount);
+    if (!exactName) return;
+
+    descInput.value = exactName;
+    updateExodaSuggestions(i);  // καθάρισε τα chips αφού γέμισε το όνομα
+    saveAllValues();
 }
 
 // Show clickable description suggestions for the given exoda row, based on the

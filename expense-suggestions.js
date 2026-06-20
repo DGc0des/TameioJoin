@@ -48,6 +48,24 @@ const EXPENSE_HISTORY = {
 const EXPENSE_RANGE_TOLERANCE_PCT = 0.12;  // 12% του ποσού
 const EXPENSE_RANGE_TOLERANCE_MIN = 0.5;   // αλλά τουλάχιστον 0.5€
 
+// Αν το ποσό ταιριάζει ΑΚΡΙΒΩΣ με αποθηκευμένο ποσό ΕΝΟΣ ΜΟΝΟ προμηθευτή, επιστρέφει
+// το όνομά του ώστε να συμπληρωθεί αυτόματα. Αν το ίδιο ακριβές ποσό υπάρχει σε
+// περισσότερους από έναν προμηθευτές (ασάφεια) ή σε κανέναν, επιστρέφει null και
+// αφήνουμε τις απλές προτάσεις να δουλέψουν.
+function exactExpenseMatch(amount) {
+    const target = Math.round(parseFloat(amount) * 100);
+    if (!isFinite(target) || target <= 0) return null;
+
+    let match = null;
+    for (const name in EXPENSE_HISTORY) {
+        const hit = EXPENSE_HISTORY[name].some(v => Math.round(v * 100) === target);
+        if (!hit) continue;
+        if (match) return null;  // ασάφεια: το ποσό ανήκει σε >1 προμηθευτή
+        match = name;
+    }
+    return match;
+}
+
 // Επιστρέφει λίστα προτεινόμενων ονομάτων (Περιγραφών) για το δοσμένο ποσό,
 // ταξινομημένα κατά πιθανότητα. Κενή λίστα αν δεν υπάρχει σχετική πρόταση.
 function suggestExpenseDescriptions(amount, maxResults = 6) {
