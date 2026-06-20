@@ -214,6 +214,49 @@ body.dark-mode .input-group label {
     font-size: 16px !important;
 }
 
+.exoda-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: -2px 0 8px 88px;
+}
+
+.exoda-suggestions:empty {
+    display: none;
+}
+
+.exoda-suggestion-chip {
+    padding: 4px 10px;
+    border: 1px solid rgba(64, 64, 48, 0.18);
+    border-radius: 999px;
+    background: #fffdf7;
+    color: var(--ink-700);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.exoda-suggestion-chip:hover,
+.exoda-suggestion-chip:active {
+    background: var(--ink-700, #3a3f39);
+    color: #fffdf7;
+    border-color: transparent;
+}
+
+body.dark-mode .exoda-suggestion-chip {
+    background: #3a3a3c;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #f5f5f7;
+}
+
+body.dark-mode .exoda-suggestion-chip:hover,
+body.dark-mode .exoda-suggestion-chip:active {
+    background: #f5f5f7;
+    color: #1c1c1e;
+}
+
 .input-group input.invalid {
     border-color: #c45236;
     background: #fff4ee;
@@ -1001,6 +1044,11 @@ body.dark-mode .fakelos-message {
         border-bottom: none;
         margin-bottom: 6px;
         padding-bottom: 0;
+    }
+
+    .exoda-suggestions {
+        margin-left: 0;
+        margin-top: 6px;
     }
 
     .input-group-exoda label {

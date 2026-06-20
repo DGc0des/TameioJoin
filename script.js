@@ -235,6 +235,7 @@ function createExodaFields(count) {
     for (let i = 1; i <= currentExodaCount; i++) {
         delete cachedInputs[`exoda-${i}`];
         delete cachedInputs[`exoda-desc-${i}`];
+        delete cachedInputs[`exoda-suggest-${i}`];
     }
 
     currentExodaCount = count;
@@ -287,22 +288,68 @@ function createExodaFields(count) {
         div.appendChild(span);
         container.appendChild(div);
 
+        // Container for description suggestions based on the typed amount
+        const suggestDiv = document.createElement('div');
+        suggestDiv.className = 'exoda-suggestions';
+        suggestDiv.id = `exoda-suggest-${i}`;
+        container.appendChild(suggestDiv);
+
         // Cache the input elements
         cachedInputs[`exoda-${i}`] = input;
         cachedInputs[`exoda-desc-${i}`] = descInput;
+        cachedInputs[`exoda-suggest-${i}`] = suggestDiv;
 
         // Add event listeners
         input.addEventListener('input', (e) => {
             handleCommaInput(e);
             validateInput(`exoda-${i}`);
+            updateExodaSuggestions(i);
             debouncedUpdate();
             debouncedSave();
         });
 
         descInput.addEventListener('input', () => {
+            // Hide suggestions once the user is typing a description manually
+            updateExodaSuggestions(i);
             debouncedSave();
         });
+
+        // Show suggestions for any restored amount
+        updateExodaSuggestions(i);
     }
+}
+
+// Show clickable description suggestions for the given exoda row, based on the
+// amount currently typed. Tapping a suggestion fills the description field.
+function updateExodaSuggestions(i) {
+    const suggestDiv = cachedInputs[`exoda-suggest-${i}`];
+    const amountInput = cachedInputs[`exoda-${i}`];
+    const descInput = cachedInputs[`exoda-desc-${i}`];
+    if (!suggestDiv || !amountInput || !descInput) return;
+
+    suggestDiv.innerHTML = '';
+
+    // Don't suggest if the suggestion engine is unavailable or the user has
+    // already written a description for this row.
+    if (typeof suggestExpenseDescriptions !== 'function') return;
+    if (descInput.value.trim() !== '') return;
+
+    const amount = parseFloat((amountInput.value || '').replace(',', '.'));
+    if (!isFinite(amount) || amount <= 0) return;
+
+    const suggestions = suggestExpenseDescriptions(amount);
+    suggestions.forEach(name => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'exoda-suggestion-chip';
+        chip.textContent = name;
+        chip.addEventListener('click', () => {
+            descInput.value = name;
+            suggestDiv.innerHTML = '';
+            saveAllValues();
+        });
+        suggestDiv.appendChild(chip);
+    });
 }
 
 // Get total exoda amount (sum of all exoda fields)
