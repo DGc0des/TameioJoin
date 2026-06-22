@@ -790,6 +790,133 @@ body.dark-mode .input-error-msg {
     margin-top: 8px;
 }
 
+/* ── Κερμάτων calculator ── */
+.calc-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.calc-input-wrapper input {
+    flex: 1;
+    width: 100%;
+    padding-right: 40px;
+}
+
+.calc-btn {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    font-size: 1.1em;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+    opacity: 0.7;
+}
+
+.calc-btn:hover {
+    opacity: 1;
+}
+
+.calc-hint {
+    text-align: center;
+    font-size: 0.82em;
+    color: var(--muted-600);
+    margin-bottom: 10px;
+}
+
+body.dark-mode .calc-hint {
+    color: #a1a1a6;
+}
+
+.calc-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.calc-row-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid rgba(64, 64, 48, 0.14);
+    border-radius: 10px;
+    font-size: 16px;
+    background: #fffdf7;
+    color: var(--ink-900);
+    font-weight: 500;
+    touch-action: manipulation;
+}
+
+.calc-row-input:focus {
+    outline: none;
+    border-color: var(--olive-600);
+    background: #fffef9;
+    box-shadow: 0 0 0 3px rgba(60, 107, 74, 0.1);
+}
+
+body.dark-mode .calc-row-input {
+    background: #3a3a3c;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #f5f5f7;
+}
+
+body.dark-mode .calc-row-input:focus {
+    border-color: #0a84ff;
+}
+
+.calc-row-remove {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(64, 64, 48, 0.08);
+    color: var(--muted-600);
+    font-size: 1.2em;
+    line-height: 1;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.calc-row-remove:hover {
+    background: rgba(196, 82, 54, 0.12);
+    color: #c45236;
+}
+
+body.dark-mode .calc-row-remove {
+    background: rgba(255, 255, 255, 0.08);
+    color: #a1a1a6;
+}
+
+body.dark-mode .calc-row-remove:hover {
+    background: rgba(255, 69, 58, 0.18);
+    color: #ff453a;
+}
+
+.calc-add-btn {
+    width: 100%;
+    margin-top: 2px;
+}
+
+.calc-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(64, 64, 48, 0.12);
+    font-size: 1.05em;
+    font-weight: 700;
+    color: var(--ink-900);
+}
+
+body.dark-mode .calc-total-row {
+    border-top-color: rgba(255, 255, 255, 0.12);
+    color: #f5f5f7;
+}
+
 @media print {
     body {
         background: white;

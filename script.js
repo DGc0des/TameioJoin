@@ -143,6 +143,15 @@ function init() {
         if (e.target === e.currentTarget) closeStelno();
     });
 
+    // Κερμάτων calculator listeners
+    document.getElementById('kermata-calc-toggle').addEventListener('click', openCalc);
+    document.getElementById('calc-add').addEventListener('click', () => createCalcRow().focus());
+    document.getElementById('calc-apply').addEventListener('click', applyCalc);
+    document.getElementById('calc-close').addEventListener('click', closeCalc);
+    document.getElementById('calc-overlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeCalc();
+    });
+
     // Load saved theme preference
     loadTheme();
 
@@ -564,6 +573,97 @@ function updateTotals() {
 // Format currency
 function formatCurrency(amount) {
     return amount.toFixed(2) + '€';
+}
+
+// ── Κερμάτων calculator (sum coin batches into the ΚΕΡΜΑΤΑ field) ──
+
+// Create one batch-amount row inside the calculator. Auto-grows a fresh
+// trailing row as soon as the last empty row is typed into.
+function createCalcRow(value = '') {
+    const container = document.getElementById('calc-rows');
+
+    const row = document.createElement('div');
+    row.className = 'calc-row';
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.inputMode = 'decimal';
+    input.className = 'calc-row-input';
+    input.placeholder = '0';
+    input.autocomplete = 'off';
+    if (value) input.value = value;
+
+    input.addEventListener('input', (e) => {
+        handleCommaInput(e);
+        // Auto-grow: typing in the last row spawns the next one
+        if (row === container.lastElementChild && input.value.trim() !== '') {
+            createCalcRow();
+        }
+        updateCalcTotal();
+    });
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'calc-row-remove';
+    removeBtn.textContent = '×';
+    removeBtn.setAttribute('aria-label', 'Αφαίρεση');
+    removeBtn.addEventListener('click', () => {
+        row.remove();
+        ensureCalcRows();
+        updateCalcTotal();
+    });
+
+    row.appendChild(input);
+    row.appendChild(removeBtn);
+    container.appendChild(row);
+    return input;
+}
+
+// Keep a minimum number of rows plus one empty trailing row to type into
+function ensureCalcRows(min = 3) {
+    const container = document.getElementById('calc-rows');
+    while (container.children.length < min) {
+        createCalcRow();
+    }
+    const last = container.lastElementChild;
+    if (!last || last.querySelector('input').value.trim() !== '') {
+        createCalcRow();
+    }
+}
+
+// Sum every batch amount currently entered
+function calcSum() {
+    let sum = 0;
+    document.querySelectorAll('#calc-rows .calc-row-input').forEach(inp => {
+        const v = parseFloat(inp.value);
+        if (!isNaN(v)) sum += v;
+    });
+    return sum;
+}
+
+function updateCalcTotal() {
+    document.getElementById('calc-total').textContent = formatCurrency(calcSum());
+}
+
+function openCalc() {
+    ensureCalcRows();
+    updateCalcTotal();
+    document.getElementById('calc-overlay').style.display = 'flex';
+}
+
+function closeCalc() {
+    document.getElementById('calc-overlay').style.display = 'none';
+}
+
+// Write the running sum into the ΚΕΡΜΑΤΑ field and refresh the totals
+function applyCalc() {
+    const sum = calcSum();
+    const kermata = cachedInputs['kermata'];
+    kermata.value = sum === 0 ? '' : parseFloat(sum.toFixed(2));
+    validateInput('kermata');
+    updateTotals();
+    saveAllValues();
+    closeCalc();
 }
 
 // Reset all inputs
