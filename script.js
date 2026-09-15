@@ -1233,5 +1233,14 @@ function renderCalendar() {
     });
 }
 
+// ── Αποβάρα toggle ──
+document.getElementById('apovara-toggle').addEventListener('click', () => {
+    const items = document.getElementById('apovara-items');
+    const arrow = document.getElementById('apovara-arrow');
+    const open = items.style.display === 'none';
+    items.style.display = open ? '' : 'none';
+    arrow.classList.toggle('open', open);
+});
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', init);
