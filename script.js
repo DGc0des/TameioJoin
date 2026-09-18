@@ -1242,5 +1242,53 @@ document.getElementById('apovara-toggle').addEventListener('click', () => {
     arrow.classList.toggle('open', open);
 });
 
+// One row per product: name + tare, its own scale-weight input, and the net weight.
+// Rows are built once; typing only refreshes that row's result so focus is kept.
+function renderApovara() {
+    const list = document.getElementById('apovara-list');
+
+    APOVARA_ITEMS.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'apovara-item';
+
+        const label = document.createElement('span');
+        label.className = 'apovara-name';
+        label.textContent = item.name;
+
+        const tare = document.createElement('small');
+        tare.textContent = `αποβάρο ${item.tare.toFixed(3)}`;
+        label.appendChild(tare);
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.inputMode = 'decimal';
+        input.className = 'apovara-input';
+        input.placeholder = '0.000';
+        input.autocomplete = 'off';
+        input.setAttribute('aria-label', `Βάρος ${item.name} (kg)`);
+
+        const result = document.createElement('strong');
+
+        const updateResult = () => {
+            const net = netWeight(input.value, item.tare);
+            result.textContent = net === null ? '—' : net.toFixed(3);
+            result.classList.toggle('empty', net === null);
+        };
+
+        input.addEventListener('input', (e) => {
+            handleCommaInput(e);
+            updateResult();
+        });
+        updateResult();
+
+        row.appendChild(label);
+        row.appendChild(input);
+        row.appendChild(result);
+        list.appendChild(row);
+    });
+}
+
+renderApovara();
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', init);

@@ -37,6 +37,8 @@ based on their feedback. It is currently in active use at the store.
 - **Στέλνω (Send/Share)** — renders the full end-of-day summary into a single compact
   image (so it fits even with many expenses) and shares it via the device's native share
   sheet. An optional receipt photo can be attached.
+- **Αποβάρα (tare weights)** — each product has its own weight input; type the scale
+  weight and see the net weight (weight − container tare). Tares live in `apovara.js`.
 - **Name & date** — pick the staff member and the date (with a built-in calendar picker).
 - **Dark mode** — toggle between light and dark themes.
 - **Mobile-first** — designed for quick use on a phone at the register.
@@ -56,6 +58,8 @@ based on their feedback. It is currently in active use at the store.
 index.html   — markup and layout
 styles.css   — styling, theming, dark mode
 script.js    — all logic: calculations, input modes, expenses, sharing
+apovara.js   — tare weight per product + net-weight calculation
+expense-suggestions.js — expense history used to suggest descriptions
 ```
 
 ## Author
